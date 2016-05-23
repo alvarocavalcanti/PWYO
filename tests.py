@@ -50,6 +50,22 @@ class TestPWYO(unittest.TestCase):
 
         self.assertEqual(tech_debts, afftected_tech_debts)
 
+    def test_user_input_yes_halts_commit(self):
+        with mock.patch('pwyo.get_input', return_value='yes'):
+            with mock.patch('pwyo.do_exit'):
+                with mock.patch('pwyo.do_print') as print_mock:
+                    pwyo.ask_commiter_about_halting_commit(['dummy'])
+
+                    print_mock.assert_called_with(' >> Commit HALTED!')
+
+    def test_user_input_any_continues_commit(self):
+        with mock.patch('pwyo.get_input', return_value='no'):
+            with mock.patch('pwyo.do_exit'):
+                with mock.patch('pwyo.do_print') as print_mock:
+                    pwyo.ask_commiter_about_halting_commit(['dummy'])
+
+                    print_mock.assert_called_with(' >> Commit continued...')
+
 
 if __name__ == '__main__':
     unittest.main()
