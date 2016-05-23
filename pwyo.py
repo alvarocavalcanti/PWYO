@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import yaml
+import sys
 
 from subprocess import check_output
 
@@ -11,11 +12,12 @@ def parse_args():
 def main(args=None):
     tech_debts = load_tech_debts()
     files_in_commit = load_files_in_commit()
-    filtered_files = filter_files(files_in_commit, ['A', 'M', 'D'])
+    filtered_files = filter_files(files_in_commit, ['A', 'M', 'D', 'MM'])
     matched_tech_debts = match_files_against_tech_debts(filtered_files, tech_debts)
     ask_commiter_about_halting_commit(matched_tech_debts)
 
 def get_input(message):
+    sys.stdin = open('/dev/tty')
     return input(message)
 
 def do_exit(code):
@@ -28,10 +30,10 @@ def ask_commiter_about_halting_commit(matched_tech_debts):
     if len(matched_tech_debts) > 0:
         answer = get_input("There are Tech Debts touched by the files your commit. Do you want to halt committing? [yes/any]")
         if answer == 'yes':
-            do_print(' >> Commit HALTED!')
+            do_print(' >> Commit HALTED!\n')
             do_exit(1)
         else:
-            do_print(' >> Commit continued...')
+            do_print(' >> Commit continued...\n')
 
 def load_tech_debts():
     with open('tech_debts.yml', 'r') as stream:
@@ -48,7 +50,7 @@ def load_files_in_commit():
     files = [f.lstrip() for f in files if f]
     return_files = []
     for file in files:
-        [type, value] = file.split(' ')
+        [type, *_, value] = file.split(' ')
         return_files.append({
             "type": type,
             "file": value

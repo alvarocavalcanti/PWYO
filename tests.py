@@ -15,6 +15,16 @@ class TestPWYO(unittest.TestCase):
             current = pwyo.load_files_in_commit()
             self.assertEqual(expected, current)
 
+    def test_load_files_in_commit_with_double_spaces(self):
+        with mock.patch('pwyo.check_output', return_value=" MM pwyo.py\nM  tests.py\n M tests1.py\n"):
+            expected = [
+                {"type": "MM", "file": "pwyo.py"},
+                {"type": "M", "file": "tests.py"},
+                {"type": "M", "file": "tests1.py"}
+            ]
+            current = pwyo.load_files_in_commit()
+            self.assertEqual(expected, current)
+
     def test_filter_files(self):
         source_files = [
             {'type': 'A', 'file': 'file_a.py'},
@@ -56,7 +66,7 @@ class TestPWYO(unittest.TestCase):
                 with mock.patch('pwyo.do_print') as print_mock:
                     pwyo.ask_commiter_about_halting_commit(['dummy'])
 
-                    print_mock.assert_called_with(' >> Commit HALTED!')
+                    print_mock.assert_called_with(' >> Commit HALTED!\n')
 
     def test_user_input_any_continues_commit(self):
         with mock.patch('pwyo.get_input', return_value='no'):
@@ -64,7 +74,7 @@ class TestPWYO(unittest.TestCase):
                 with mock.patch('pwyo.do_print') as print_mock:
                     pwyo.ask_commiter_about_halting_commit(['dummy'])
 
-                    print_mock.assert_called_with(' >> Commit continued...')
+                    print_mock.assert_called_with(' >> Commit continued...\n')
 
 
 if __name__ == '__main__':
