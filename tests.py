@@ -29,5 +29,27 @@ class TestPWYO(unittest.TestCase):
         ]
         self.assertEqual(expected_files, result)
 
+    def test_match_files_against_tech_debts(self):
+        tech_debts = [
+            {'title': 'Tech Debt Dummy A',
+            'file': 'file_a.py'},
+            {'title': 'Tech Debt Dummy B',
+            'file': 'file_b.py'},
+            {'title': 'Tech Debt Dummy D',
+            'file': 'file_d.py'}
+        ]
+        files = [
+            {'type': 'A', 'file': 'file_a.py'},
+            {'type': 'B', 'file': 'file_b.py'},
+            {'type': 'C', 'file': 'file_c.py'}
+        ]
+
+        afftected_tech_debts = pwyo.match_files_against_tech_debts(files, tech_debts)
+
+        _ = tech_debts.pop()
+
+        self.assertEqual(tech_debts, afftected_tech_debts)
+
+
 if __name__ == '__main__':
     unittest.main()

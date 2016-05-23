@@ -41,6 +41,11 @@ def filter_files(source_files, types):
     filtered_files = [file for file in source_files if file['type'] in types]
     return filtered_files
 
+def match_files_against_tech_debts(files, tech_debts):
+    files = [file['file'] for file in files]
+    result = [tech_debt for tech_debt in tech_debts if tech_debt['file'] in files]
+    return result
+
 if __name__ == "__main__":
     print('----------------------')
     print('|PWYO| Pre-commit Hook')
