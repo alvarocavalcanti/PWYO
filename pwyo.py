@@ -37,9 +37,9 @@ def load_files_in_commit():
         })
     return return_files
 
-def filter_files(source_files, keys):
-    # return [file in source_files if file]
-    pass
+def filter_files(source_files, types):
+    filtered_files = [file for file in source_files if file['type'] in types]
+    return filtered_files
 
 if __name__ == "__main__":
     print('----------------------')
