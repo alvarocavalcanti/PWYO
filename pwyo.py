@@ -12,6 +12,7 @@ def parse_args():
 def main(args=None):
     tech_debts = load_tech_debts()
     files_in_commit = load_files_in_commit()
+    filtered_files = filter_files(files_in_commit, ['A', 'M', 'D'])
     # exit(1)
 
 def load_tech_debts():
@@ -29,11 +30,16 @@ def load_files_in_commit():
     files = [f.lstrip() for f in files if f]
     return_files = []
     for file in files:
-        [key, value] = file.split(' ')
+        [type, value] = file.split(' ')
         return_files.append({
-            key: value
+            "type": type,
+            "file": value
         })
     return return_files
+
+def filter_files(source_files, keys):
+    # return [file in source_files if file]
+    pass
 
 if __name__ == "__main__":
     print('----------------------')
