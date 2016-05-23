@@ -28,7 +28,7 @@ def do_print(message):
 
 def ask_commiter_about_halting_commit(matched_tech_debts):
     if len(matched_tech_debts) > 0:
-        answer = get_input("There are Tech Debts touched by the files your commit. Do you want to halt committing? [yes/any]")
+        answer = get_input("There are Tech Debts touched by the files your commit. Do you want to halt committing? yes/[any]")
         if answer == 'yes':
             do_print(' >> Commit HALTED!\n')
             do_exit(1)
