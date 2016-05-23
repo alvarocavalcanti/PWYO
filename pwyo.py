@@ -24,8 +24,16 @@ def load_tech_debts():
     return tech_debts
 
 def load_files_in_commit():
-    result = check_output(['git','status','-s'])
-    return result
+    result = check_output(['git','status','-s'], universal_newlines=True)
+    files = result.split('\n')
+    files = [f.lstrip() for f in files if f]
+    return_files = []
+    for file in files:
+        [key, value] = file.split(' ')
+        return_files.append({
+            key: value
+        })
+    return return_files
 
 if __name__ == "__main__":
     print('----------------------')
