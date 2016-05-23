@@ -18,7 +18,9 @@ def main(args=None):
 
 def get_input(message):
     sys.stdin = open('/dev/tty')
-    return input(message)
+    answer = input(message)
+    sys.stdin = open('/dev/null')    
+    return answer
 
 def do_exit(code):
     return exit(code)
