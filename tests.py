@@ -62,20 +62,38 @@ class TestPWYO(unittest.TestCase):
 
     def test_user_input_yes_halts_commit(self):
         with mock.patch('pwyo.get_input', return_value='yes'):
-            with mock.patch('pwyo.do_exit'):
-                with mock.patch('pwyo.do_print') as print_mock:
-                    pwyo.ask_commiter_about_halting_commit(['dummy'])
-
-                    print_mock.assert_called_with(' >> Commit HALTED!\n')
+            with mock.patch('pwyo.do_print'):
+                with mock.patch('pwyo.do_exit') as exit_mock:
+                    pwyo.ask_commiter_about_halting_commit([{'title': 'dummy', 'file': 'dummy'}])
+                    exit_mock.assert_called_with(1)
 
     def test_user_input_any_continues_commit(self):
         with mock.patch('pwyo.get_input', return_value='no'):
-            with mock.patch('pwyo.do_exit'):
-                with mock.patch('pwyo.do_print') as print_mock:
-                    pwyo.ask_commiter_about_halting_commit(['dummy'])
+            with mock.patch('pwyo.do_print'):
+                with mock.patch('pwyo.do_exit') as exit_mock:
+                    pwyo.ask_commiter_about_halting_commit([{'title': 'dummy', 'file': 'dummy'}])
+                    exit_mock.assert_not_called()
 
-                    print_mock.assert_called_with(' >> Commit continued...\n')
+    def test_checks_for_missing_tech_debt_files(self):
+        tech_debt_a = {'title': 'Tech Debt Dummy A', 'file': 'file_a.py'}
+        tech_debts = [
+            tech_debt_a,
+            {'title': 'Tech Debt Dummy B',
+            'file': 'file_b.py'},
+            {'title': 'Tech Debt Dummy C',
+            'file': 'file_c.py'}
+        ]
 
+        def side_effect(file_name):
+            if file_name == 'file_a.py':
+                return False
+            return True
+
+        with mock.patch('pwyo.file_exists', side_effect=side_effect):
+            missing_tech_debt_files = pwyo.check_for_missing_tech_debt_files(tech_debts)
+
+        self.assertEqual(1, len(missing_tech_debt_files))
+        self.assertEqual(tech_debt_a, missing_tech_debt_files[0])
 
 if __name__ == '__main__':
     unittest.main()

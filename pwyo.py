@@ -2,6 +2,7 @@
 
 import yaml
 import sys
+import os
 
 from subprocess import check_output
 
@@ -14,12 +15,14 @@ def main(args=None):
     files_in_commit = load_files_in_commit()
     filtered_files = filter_files(files_in_commit, ['A', 'M', 'D', 'MM'])
     matched_tech_debts = match_files_against_tech_debts(filtered_files, tech_debts)
-    ask_commiter_about_halting_commit(matched_tech_debts)
+    missing_tech_debt_files = check_for_missing_tech_debt_files(tech_debts)
+    was_report_printed = print_report(matched_tech_debts, missing_tech_debt_files)
+    ask_commiter_about_halting_commit(was_report_printed)
 
 def get_input(message):
     sys.stdin = open('/dev/tty')
     answer = input(message)
-    sys.stdin = open('/dev/null')    
+    sys.stdin = open('/dev/null')
     return answer
 
 def do_exit(code):
@@ -28,9 +31,30 @@ def do_exit(code):
 def do_print(message):
     return print(message)
 
-def ask_commiter_about_halting_commit(matched_tech_debts):
+def file_exists(file):
+    return os.path.exists(file)
+
+def print_report(matched_tech_debts, missing_tech_debt_files):
+    result = False
     if len(matched_tech_debts) > 0:
-        answer = get_input("There are Tech Debts touched by the files your commit. Do you want to halt committing? yes/[any]")
+        do_print("TECH DEBTS FOUND: The following Tech Debts are linked to files you're trying to commit:")
+        for tech_debt in matched_tech_debts:
+            do_print('- Title: {}\n  File: {}'.format(tech_debt['title'], tech_debt['file']))
+        do_print('\n')
+        result = True
+
+    if len(missing_tech_debt_files) > 0:
+        do_print("TECH DEBTS MISSING: The following Tech Debts files are missing from :")
+        for tech_debt in missing_tech_debt_files:
+            do_print('- Title: {}\n  File: {}'.format(tech_debt['title'], tech_debt['file']))
+        do_print('\n')
+        result = True
+
+    return result
+
+def ask_commiter_about_halting_commit(was_report_printed=False, prompt_user=True):
+    if was_report_printed and prompt_user:
+        answer = get_input("Do you want to halt committing? yes/[no]")
         if answer == 'yes':
             do_print(' >> Commit HALTED!\n')
             do_exit(1)
@@ -67,6 +91,10 @@ def match_files_against_tech_debts(files, tech_debts):
     files = [file['file'] for file in files]
     result = [tech_debt for tech_debt in tech_debts if tech_debt['file'] in files]
     return result
+
+def check_for_missing_tech_debt_files(tech_debts):
+    missing_tech_debts = [tech_debt for tech_debt in tech_debts if not file_exists(tech_debt['file'])]
+    return missing_tech_debts
 
 if __name__ == "__main__":
     print('----------------------')
