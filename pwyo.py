@@ -7,11 +7,7 @@ import os
 from subprocess import check_output
 
 
-def parse_args():
-    pass
-
-
-def main(args=None):
+def main():
     tech_debts = load_tech_debts()
     files_in_commit = load_files_in_commit()
     filtered_files = filter_files(files_in_commit, ['A', 'M', 'D', 'MM'])
@@ -80,7 +76,7 @@ def load_tech_debts():
 
 
 def load_files_in_commit():
-    result = check_output(['git','status','-s'], universal_newlines=True)
+    result = check_output(['git', 'status', '-s'], universal_newlines=True)
     files = result.split('\n')
     files = [f.lstrip() for f in files if f]
     return_files = []
@@ -109,8 +105,4 @@ def check_for_missing_tech_debt_files(tech_debts):
     return missing_tech_debts
 
 if __name__ == "__main__":
-    print('----------------------')
-    print('|PWYO| Pre-commit Hook')
-    print('----------------------')
-    args = parse_args()
-    main(args)
+    main()
