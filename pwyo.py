@@ -10,6 +10,7 @@ from subprocess import check_output
 def parse_args():
     pass
 
+
 def main(args=None):
     tech_debts = load_tech_debts()
     files_in_commit = load_files_in_commit()
@@ -19,20 +20,25 @@ def main(args=None):
     was_report_printed = print_report(matched_tech_debts, missing_tech_debt_files)
     ask_commiter_about_halting_commit(was_report_printed)
 
+
 def get_input(message):
     sys.stdin = open('/dev/tty')
     answer = input(message)
     sys.stdin = open('/dev/null')
     return answer
 
+
 def do_exit(code):
     return exit(code)
+
 
 def do_print(message):
     return print(message)
 
+
 def file_exists(file):
-    return os.path.exists(file)
+    return True if file is None else os.path.exists(file)
+
 
 def print_report(matched_tech_debts, missing_tech_debt_files):
     result = False
@@ -52,6 +58,7 @@ def print_report(matched_tech_debts, missing_tech_debt_files):
 
     return result
 
+
 def ask_commiter_about_halting_commit(was_report_printed=False, prompt_user=True):
     if was_report_printed and prompt_user:
         answer = get_input("Do you want to halt committing? yes/[no]")
@@ -61,6 +68,7 @@ def ask_commiter_about_halting_commit(was_report_printed=False, prompt_user=True
         else:
             do_print(' >> Commit continued...\n')
 
+
 def load_tech_debts():
     with open('tech_debts.yml', 'r') as stream:
         try:
@@ -69,6 +77,7 @@ def load_tech_debts():
             print(e)
             do_exit(1)
     return tech_debts
+
 
 def load_files_in_commit():
     result = check_output(['git','status','-s'], universal_newlines=True)
@@ -83,14 +92,17 @@ def load_files_in_commit():
         })
     return return_files
 
+
 def filter_files(source_files, types):
     filtered_files = [file for file in source_files if file['type'] in types]
     return filtered_files
+
 
 def match_files_against_tech_debts(files, tech_debts):
     files = [file['file'] for file in files]
     result = [tech_debt for tech_debt in tech_debts if tech_debt['file'] in files]
     return result
+
 
 def check_for_missing_tech_debt_files(tech_debts):
     missing_tech_debts = [tech_debt for tech_debt in tech_debts if not file_exists(tech_debt['file'])]
