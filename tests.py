@@ -74,7 +74,7 @@ class TestPWYO(unittest.TestCase):
                     pwyo.ask_commiter_about_halting_commit([{'title': 'dummy', 'file': 'dummy'}])
                     exit_mock.assert_not_called()
 
-    def test_checks_for_missing_tech_debt_files(self):
+    def test_check_for_missing_tech_debt_files(self):
         tech_debt_a = {'title': 'Tech Debt Dummy A', 'file': 'file_a.py'}
         tech_debts = [
             tech_debt_a,
@@ -94,6 +94,24 @@ class TestPWYO(unittest.TestCase):
 
         self.assertEqual(1, len(missing_tech_debt_files))
         self.assertEqual(tech_debt_a, missing_tech_debt_files[0])
+
+    def test_check_files_for_matching_paths(self):
+        tech_debts = [
+            {'title': 'Tech Debt Dummy A',
+            'file': 'foo/bar/'},
+            {'title': 'Tech Debt Dummy B',
+            'file': 'file_b.py'},
+            {'title': 'Tech Debt Dummy C',
+            'file': 'file_c.py'}
+        ]
+        files = [
+            {'type': 'A', 'file': 'foo/bar/dummy.py'},
+        ]
+
+        afftected_tech_debts = pwyo.match_files_against_paths_tech_debts(files, tech_debts)
+
+        self.assertEqual(tech_debts[0], afftected_tech_debts[0])
+
 
 if __name__ == '__main__':
     unittest.main()

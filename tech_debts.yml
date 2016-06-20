@@ -4,3 +4,5 @@
   file: tests.py
 - title: Missing Tech Debt
   file: missing_file.py
+- title: TB in path
+  file: foo/bar/

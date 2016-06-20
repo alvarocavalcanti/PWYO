@@ -12,6 +12,8 @@ def main():
     files_in_commit = load_files_in_commit()
     filtered_files = filter_files(files_in_commit, ['A', 'M', 'D', 'MM'])
     matched_tech_debts = match_files_against_tech_debts(filtered_files, tech_debts)
+    matched_tech_debts_for_paths = match_files_against_paths_tech_debts(filtered_files, tech_debts)
+    matched_tech_debts.extend(matched_tech_debts_for_paths)
     missing_tech_debt_files = check_for_missing_tech_debt_files(tech_debts)
     was_report_printed = print_report(matched_tech_debts, missing_tech_debt_files)
     ask_commiter_about_halting_commit(was_report_printed)
@@ -97,6 +99,16 @@ def filter_files(source_files, types):
 def match_files_against_tech_debts(files, tech_debts):
     files = [file['file'] for file in files]
     result = [tech_debt for tech_debt in tech_debts if tech_debt['file'] in files]
+    return result
+
+
+def match_files_against_paths_tech_debts(files, tech_debts):
+    tech_debts_with_paths = [tech_debt for tech_debt in tech_debts if tech_debt['file'].endswith('/')]
+    result = list()
+    for tech_debt in tech_debts_with_paths:
+        for file in files:
+            if tech_debt['file'] in file['file']:
+                result.append(tech_debt)
     return result
 
 
