@@ -35,7 +35,7 @@ def do_print(message):
 
 
 def file_exists(file):
-    return True if file is None else os.path.exists(file)
+    return True if file is None else os.path.join(os.getcwd(), file)
 
 
 def print_report(matched_tech_debts, missing_tech_debt_files):
@@ -103,7 +103,8 @@ def match_files_against_tech_debts(files, tech_debts):
 
 
 def match_files_against_paths_tech_debts(files, tech_debts):
-    tech_debts_with_paths = [tech_debt for tech_debt in tech_debts if tech_debt['file'].endswith('/')]
+    tech_debts_with_paths = [tech_debt for tech_debt in tech_debts
+                                if tech_debt['file'] and tech_debt['file'].endswith('/')]
     result = list()
     for tech_debt in tech_debts_with_paths:
         for file in files:
